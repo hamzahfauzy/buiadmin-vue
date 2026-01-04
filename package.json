@@ -1,0 +1,32 @@
+{
+  "name": "htd-app-ui",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.12.2",
+    "datatables.net": "^2.3.4",
+    "datatables.net-bs5": "^2.3.4",
+    "datatables.net-dt": "^2.3.4",
+    "datatables.net-responsive-bs5": "^3.0.7",
+    "jquery": "^3.7.1",
+    "pinia": "^3.0.3",
+    "select2": "^4.1.0-rc.0",
+    "sweetalert2": "^11.26.17",
+    "vue": "^3.5.21",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "vite": "^7.1.6"
+  },
+  "author": "Hamzah Fauzy",
+  "license": "ISC",
+  "description": ""
+}

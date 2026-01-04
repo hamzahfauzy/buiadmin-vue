@@ -1,0 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+@import url('header.css');
+@import url('content.css');
+@import url('utility.css');
+@import url('data-table.css');
+@import url('footer.css');
+
+body {
+    background-color: #F4F5F7;
+    font-family: Outfit, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+a {
+    color: #0645ce;
+}

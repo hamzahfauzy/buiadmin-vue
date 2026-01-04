@@ -1,0 +1,148 @@
+.app-header {
+    position: sticky;
+    top:0;
+    z-index: 1050;
+}
+
+.app-header-mobile {
+    display: none;
+    position: sticky;
+    top:0;
+    z-index: 1050;
+}
+
+.app-header .primary-brand, 
+.app-header .secondary-brand, 
+.app-header-mobile .primary-brand, 
+.app-header-mobile .secondary-brand, 
+.app-header .primary-minimize-brand, 
+.app-header .secondary-minimize-brand {
+    display: none;
+}
+
+.app-header.app-header-primary:not(.minimize) .primary-brand,
+.app-header.app-header-primary.minimize .primary-minimize-brand,
+.app-header:not(.app-header-primary):not(.minimize) .secondary-brand,
+.app-header:not(.app-header-primary).minimize .secondary-minimize-brand,
+.app-header-mobile.app-header-primary .primary-brand,
+.app-header-mobile:not(.app-header-primary) .secondary-brand {
+    display: block !important;
+}
+
+.app-header-primary {
+    background-color: #0984e3;
+}
+
+.app-header .app-header-container {
+    display: flex;
+}
+
+.app-header-mobile .app-header-container {
+    display: block;
+    text-align: center;
+    position: relative;
+}
+
+.app-header.minimize .app-brand {
+    flex:0 0 120px;
+}
+
+.app-header .app-brand {
+    flex:0 0 250px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    /* border-right: 2px solid #5195d9; */
+}
+
+.app-header-mobile {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.app-header .app-title {
+    padding-right: 2rem;
+    align-items: center;
+}
+
+.app-header .app-title .app-navigation .btn-menu,
+.app-header-mobile .app-title .app-navigation .btn-menu {
+    padding: 0;
+    font-size: 30px;
+    line-height: 0;
+    color: #0984e3;
+    margin-left: -4px;
+}
+
+.app-header-mobile .app-title .app-navigation .btn-menu.btn-toggle-account-side {
+    margin-left: 0;
+    margin-right: -4px;
+}
+
+.app-header-mobile .app-title .app-navigation .btn-menu .ft-x {
+    display: none;
+}
+
+.app-header-mobile .app-title {
+    position: absolute;
+    top: 0;
+}
+
+.app-header.app-header-primary .app-title .app-navigation .btn-menu,
+.app-header-mobile.app-header-primary .app-title .app-navigation .btn-menu {
+    color: #FFF !important;
+}
+
+.app-header .app-title .app-user ul,
+.app-header .app-title .app-user ul li,
+.app-user-mobile ul,
+.app-user-mobile ul li {
+    padding: 0;
+    margin: 0;
+    min-height: 64px;
+}
+
+.app-header .app-title .app-user ul li,
+.app-user-mobile ul li {
+    list-style-type: none;
+}
+
+.app-header .app-title .app-user ul li.dropdown a.nav-link,
+.app-user-mobile ul li.dropdown a.nav-link {
+    color: #0984e3;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+}
+
+.app-header .app-title .app-user ul li.dropdown.account a.nav-link,
+.app-user-mobile ul li.dropdown.account a.nav-link {
+    gap: 5px;
+}
+
+.app-header .app-title .app-user {
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+}
+
+.app-user-mobile {
+    background-color: #deecfa;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    display: none;
+    position:sticky;
+    top: 64px;
+}
+
+.app-header.app-header-primary .app-title .app-user ul li.dropdown a.nav-link {
+    color: #FFF !important;
+}
+
+.app-header.app-header-primary .app-title .app-user ul li.dropdown a.nav-link.show,
+.app-header.app-header-primary .app-title .app-user ul li.dropdown a.nav-link:hover {
+    color: #c7e3fa !important;
+}

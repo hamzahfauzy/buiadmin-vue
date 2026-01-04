@@ -1,0 +1,53 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+
+.auth-container {
+    background-color: #0984e3;
+    font-family: Outfit, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+/* FULL SCREEN CENTER */
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+}
+
+/* LOGIN BOX */
+.login-box {
+    width: 100%;
+    max-width: 450px;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+/* TITLE */
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-box p, .login-box h2, .login-box .form-check-label, .login-box .form-label {
+    color: #deecfa;
+}
+
+/* FORM */
+.form-group {
+    margin-bottom: 14px;
+}
+
+.btn-login {
+    background-color: #deecfa;
+    color: #0984e3;
+}
+
+.form-password .toggle-password-btn {
+    position: absolute;
+    top: 6px;
+    right: 0;
+}
