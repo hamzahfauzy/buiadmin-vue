@@ -23,7 +23,7 @@ import NotificationList from './Header/NotificationList.vue';
         </div>
     </section>
 
-    <section class="app-user-mobile">
+    <section class="app-user-mobile" style="z-index: 1;">
         <ul class="d-flex align-items-center gap-4">
             <MessageList />
 
