@@ -16,11 +16,6 @@ const state = reactive({
 })
 
 const emit = defineEmits(['submit'])
-const isSubmiting = ref(false)
-
-const getModelValue = key => {
-    return props.modelValue[key]
-}
 
 const handleSubmit = async (e) => {
   e.preventDefault()
@@ -41,7 +36,7 @@ const handleSubmit = async (e) => {
   emit('submit', {
     payload: fd,
     callback: function () {
-      state.submitBtnLabel = "Data telah disubmit"
+      state.submitBtnLabel = "Submitted..."
       state.isSubmiting = false
 
       document.querySelectorAll('input[type=file]').forEach(el => { el.value = "" })
@@ -64,9 +59,12 @@ const handleSubmit = async (e) => {
       </template>
 
       <slot></slot>
-      <button v-if="hasSubmitButton" :disabled="state.isDisable" class="btn btn-primary">
-        {{ state.isSubmiting ? 'Silahkan Tunggu...' : state.submitBtnLabel }}
-      </button>
+
+      <div>
+        <button v-if="hasSubmitButton" :disabled="state.isDisable" class="btn btn-primary">
+          {{ state.isSubmiting ? 'Please wait...' : state.submitBtnLabel }}
+        </button>
+      </div>
     </div>
   </form>
 </template>

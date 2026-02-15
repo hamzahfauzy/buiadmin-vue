@@ -5,19 +5,25 @@ import Auth from "@/layouts/Auth.vue";
 import Login from "@/pages/Auth/Login.vue";
 import ForgotPassword from "@/pages/Auth/ForgotPassword.vue";
 import ResetPassword from "@/pages/Auth/ResetPassword.vue";
-import Dashboard from "@/pages/Dashboard.vue";
+// import Dashboard from "@/pages/Dashboard.vue";
 import NotFound from "@/pages/NotFound.vue";
 import Page from "@/pages/Page.vue";
+import Profile from "@/pages/Profile.vue";
 
 const routes = [
+  // {
+  //   path: "/",
+  //   redirect: "/dashboard",
+  //   component: Admin,
+  //   meta: { requiresAuth: true }, // Proteksi
+  //   children: [
+  //     { path: "dashboard", name: 'dashboard', component: Dashboard, meta: {title: 'Dashboard'}},
+  //   ]
+  // },
   {
-    path: "/",
-    redirect: "/dashboard",
-    component: Admin,
+    path: "/profile",
+    component: Profile,
     meta: { requiresAuth: true }, // Proteksi
-    children: [
-      { path: "dashboard", name: 'dashboard', component: Dashboard, meta: {title: 'Dashboard'}},
-    ]
   },
   {
     path: "/page",
@@ -39,6 +45,7 @@ const routes = [
   },
   {
     path: "/:pathMatch(.*)*",
+    meta: { requiresAuth: true },
     component: NotFound,
   }
 ]

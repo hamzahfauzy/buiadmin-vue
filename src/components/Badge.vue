@@ -5,5 +5,5 @@ defineProps({
 })
 </script>
 <template>
-    <span class="badge" :class="'bg-' + color">{{ label }}</span> &nbsp;
+    <span class="badge" :class="'fw-semibold bg-' + color +'-subtle text-'+color+'-emphasis'">{{ label }}</span> &nbsp;
 </template>

@@ -5,16 +5,16 @@ const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 </script>
 <template>
-    <h2>Atur Ulang Kata Sandi</h2>
-    <p class="text-center">Masukan Kata Sandi Baru untuk mengatur ulang kata sandi.</p>
+    <h2>Reset Password</h2>
+    <p class="text-center">Please input your new password</p>
     <form>
         <div class="form-group">
-            <label for="" class="form-label">Nama Pengguna</label>
+            <label for="" class="form-label">Username</label>
             <input type="text" placeholder="johndoe" class="form-control form-control-lg" readonly="">
         </div>
 
         <div class="form-group">
-            <label for="" class="form-label">Kata Sandi</label>
+            <label for="" class="form-label">Password</label>
             <div class="form-password position-relative">
                 <input :type="showPassword ? 'text' : 'password'" placeholder="*******" required class="form-control form-control-lg">
                 <button type="button" class="btn toggle-password-btn" aria-label="Toggle password visibility" @click="showPassword = !showPassword">
@@ -25,7 +25,7 @@ const showConfirmPassword = ref(false)
         </div>
         
         <div class="form-group">
-            <label for="" class="form-label">Konfirmasi Kata Sandi</label>
+            <label for="" class="form-label">Confirm Password</label>
             <div class="form-password position-relative">
                 <input :type="showConfirmPassword ? 'text' : 'password'" placeholder="*******" required class="form-control form-control-lg">
                 <button type="button" class="btn toggle-password-btn" aria-label="Toggle password visibility" @click="showConfirmPassword = !showConfirmPassword">

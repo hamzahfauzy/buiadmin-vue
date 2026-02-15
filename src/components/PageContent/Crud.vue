@@ -5,7 +5,7 @@ import Modal from '../Modal.vue';
 import Form from '../Form.vue';
 import CrudService from '@/libraries/services/crud.service';
 import Swal from 'sweetalert2'
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { getNested } from '@/libraries/utility';
 import { useAppStore } from '@/libraries/app';
 import DetailData from '../DetailData.vue';
@@ -32,14 +32,14 @@ const openCreateModal = function() {
 }
 
 const handleCreate = async function() {
-    crudProperties.submitLabel = 'Silahkan Tunggu...'
+    crudProperties.submitLabel = 'Please wait...'
     try {
         await CrudService.create(props.page.content.value.endpoint, createFormData.value)
         createFormData.value = {}
         dataTable.value.initTableData()
         Swal.fire({
-            title: 'Berhasil',
-            text: 'Data berhasil disimpan',
+            title: 'Success',
+            text: 'Data saved successfuly',
             icon: 'success',
             confirmButtonText: 'OK'
         })
@@ -70,7 +70,7 @@ const createButton = props.page.content.value.create && appStore.hasPermission(p
 } : {};
 
 const viewData = ref({})
-const openViewModal = async function(id, index = 0) {
+const openViewModal = async function(id) {
     try {
         const endpoint = props.page.content.value.endpoint + '/' + id
         const {data} = await CrudService.get(endpoint)
@@ -82,11 +82,12 @@ const openViewModal = async function(id, index = 0) {
 }
 
 const editFormData = ref({})
-const openEditModal = async function(id, index = 0) {
+const openEditModal = async function(id) {
     try {
         editFormData.value.id = id
         const endpoint = props.page.content.value.endpoint + '/' + id
         const {data} = await CrudService.get(endpoint)
+        const index = props.page.content.value.actions.findIndex(action => action.type == 'edit')
         props.page.content.value.actions[index].fields.forEach(field => {
             if (field.type == 'file') return
             editFormData.value[field.name] = getNested(data.data, field.fieldValue ?? field.name)
@@ -98,7 +99,7 @@ const openEditModal = async function(id, index = 0) {
 }
 
 const handleEdit = async function() {
-    crudProperties.submitLabel = 'Silahkan Tunggu...'
+    crudProperties.submitLabel = 'Please wait...'
     try {
         const id = editFormData.value.id
         const endpoint = props.page.content.value.endpoint + '/' + id
@@ -108,8 +109,8 @@ const handleEdit = async function() {
         editFormData.value = {}
         dataTable.value.initTableData()
         Swal.fire({
-            title: 'Berhasil',
-            text: 'Data berhasil diupdate',
+            title: 'Success',
+            text: 'Data updated successfuly',
             icon: 'success',
             confirmButtonText: 'OK'
         })
@@ -134,8 +135,8 @@ const handleEdit = async function() {
 
 const handleDelete = async function(id) {
     Swal.fire({
-        title: 'Konfirmasi',
-        text: 'Apakah kamu yakin akan menghapus data ini ?',
+        title: 'Confirm',
+        text: 'Are you sure to delete this data ?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'OK'
@@ -144,8 +145,8 @@ const handleDelete = async function(id) {
             await CrudService.delete(props.page.content.value.endpoint + '/' + id)
             dataTable.value.initTableData()
             Swal.fire({
-                title: "Terhapus!",
-                text: "Data berhasil dihapus.",
+                title: "Deleted!",
+                text: "Data deleted successfuly.",
                 icon: "success"
             });
         }
@@ -153,24 +154,38 @@ const handleDelete = async function(id) {
     
 }
 
-const dataInitCallback = function() {
-    $(document).on('click', "[data-type='view']", async function(){
-        const id = $(this).data('id')
-        const index = $(this).data('index')
-        await openViewModal(id, index)
-    })
+let viewEventMounted = false;
 
-    $(document).on('click', "[data-type='edit']", async function(){
-        const id = $(this).data('id')
-        const index = $(this).data('index')
-        await openEditModal(id, index)
-    })
-    
-    $(document).on('click', "[data-type='delete']", async function(){
-        const id = $(this).data('id')
-        await handleDelete(id)
-    })
+const dataInitCallback = function() {
+
+    if (viewEventMounted) return;
+    viewEventMounted = true;
+
+    $('body')
+    .off('click.action')
+    .on('click.action', '[data-type]', async function () {
+        const type = $(this).data('type');
+        const id = $(this).data('id');
+
+        switch (type) {
+        case 'view':
+            await openViewModal(id);
+            break;
+
+        case 'edit':
+            await openEditModal(id);
+            break;
+
+        case 'delete':
+            await handleDelete(id);
+            break;
+        }
+    });
 }
+
+onUnmounted(() => {
+
+})
 
 onMounted(() => {
     actions.value = props.page.content.value.actions.filter(action => appStore.hasPermission(action.permission))
@@ -191,7 +206,7 @@ onMounted(() => {
 
         <Modal id="create-modal" v-if="page.content.value.create" :modalClass="page.content.value.create.modalClass">
             <template v-slot:modalHeader>
-                {{page.content.value.create.title ?? 'Form Tambah Data'}}
+                {{page.content.value.create.title ?? 'Create Data Form'}}
             </template>
 
             <template v-slot:modalBody>
@@ -205,7 +220,7 @@ onMounted(() => {
 
         <Modal id="view-modal" v-if="page.content.value.actions.find(action => action.type == 'view')" :modalClass="page.content.value.create.modalClass">
             <template v-slot:modalHeader>
-                {{page.content.value.actions.find(action => action.type == 'view').title ?? 'Form View Data'}}
+                {{page.content.value.actions.find(action => action.type == 'view').title ?? 'Detail Data'}}
             </template>
 
             <template v-slot:modalBody>
@@ -215,7 +230,7 @@ onMounted(() => {
 
         <Modal id="edit-modal" v-if="page.content.value.actions.find(action => action.type == 'edit')" :modalClass="page.content.value.create.modalClass">
             <template v-slot:modalHeader>
-                {{page.content.value.actions.find(action => action.type == 'edit').title ?? 'Form Edit Data'}}
+                {{page.content.value.actions.find(action => action.type == 'edit').title ?? 'Edit Data Form'}}
             </template>
 
             <template v-slot:modalBody>

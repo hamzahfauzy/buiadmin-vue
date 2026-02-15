@@ -20,8 +20,8 @@ function doLogout(){
 <template>
     <li class="dropdown account" v-if="appStore.ui">
         <a class="nav-link dropdown-toggle arrow-none nav-user" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-            <span class="account-user-avatar">
-                <img src="/src/assets/images/avatar.jpeg" alt="user-image" width="32" class="rounded-circle">
+            <span class="account-user-avatar me-2">
+                <img :src="appStore.getPicUrl()" alt="user-image" width="32" height="32" class="rounded-circle object-fit-cover">
             </span>
             <span class="d-block">
                 {{ appStore.ui?.user?.name }}
@@ -36,16 +36,16 @@ function doLogout(){
             </div>
 
             <!-- item-->
-            <a href="pages-profile.html" class="dropdown-item">
+            <router-link to="/profile" class="dropdown-item">
                 <i class="ri-account-circle-line fs-18 align-middle me-1"></i>
                 <span>My Account</span>
-            </a>
+            </router-link>
 
             <!-- item-->
-            <a href="pages-profile.html" class="dropdown-item">
+            <!-- <a href="pages-profile.html" class="dropdown-item">
                 <i class="ri-settings-4-line fs-18 align-middle me-1"></i>
                 <span>Settings</span>
-            </a>
+            </a> -->
 
             <!-- item-->
             <a href="javascript:void(0)" class="dropdown-item" @click="doLogout">

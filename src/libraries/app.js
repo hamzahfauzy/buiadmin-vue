@@ -8,6 +8,7 @@ export const useAppStore = defineStore('app', {
         isAuthenticated: false,
         token: Auth.getToken(),
         isLoading: false,
+        defaultPage: '/dashboard',
         ui: null
     }),
 
@@ -17,6 +18,10 @@ export const useAppStore = defineStore('app', {
             try {
                 const {data} = await HttpService.get('/ui/bootstrap')
                 this.ui = data.data
+
+                const pages = this.ui.pages
+                const defaultPage = Object.values(pages).find(p => p.isDefault)
+                this.defaultPage = defaultPage ? '/page/' + defaultPage.path : this.defaultPage
                 this.isAuthenticated = true
             } catch (error) {
                 this.isAuthenticated = false
@@ -35,6 +40,12 @@ export const useAppStore = defineStore('app', {
             const permissions = Object.values(this.ui.user.permissions)
             if (permissions.includes("*")) return true
             return permissions.includes(permission)
+        },
+        updateAccount(data){
+            this.ui.user = data
+        },
+        getPicUrl(){
+            return this.ui.user.pic_url && this.ui.user.pic_url != '' ? this.ui.user.pic_url : '/src/assets/images/avatar.jpeg'
         }
     }
 })

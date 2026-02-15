@@ -46,7 +46,7 @@
     color: #0984e3;
 }
 
-.form-password .toggle-password-btn {
+.auth-form-password.form-password .toggle-password-btn {
     position: absolute;
     top: 6px;
     right: 0;

@@ -1,8 +1,8 @@
 <script setup>
 import Account from './Header/Account.vue';
 import Brand from './Header/Brand.vue';
-import MessageList from './Header/MessageList.vue';
-import NotificationList from './Header/NotificationList.vue';
+// import MessageList from './Header/MessageList.vue';
+// import NotificationList from './Header/NotificationList.vue';
 </script>
 <template>
     <section class="app-header-mobile app-header-primary">
@@ -24,11 +24,11 @@ import NotificationList from './Header/NotificationList.vue';
     </section>
 
     <section class="app-user-mobile" style="z-index: 1;">
-        <ul class="d-flex align-items-center gap-4">
+        <!-- <ul class="d-flex align-items-center gap-4">
             <MessageList />
 
             <NotificationList />
-        </ul>
+        </ul> -->
 
         <ul>
             <Account />

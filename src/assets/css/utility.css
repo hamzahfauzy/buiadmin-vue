@@ -157,6 +157,10 @@ td:has(.datatable-dropdown-action){
     z-index:1;
 }
 
+.data-table td:not(.number-col, .action-col) {
+    min-width: 150px;
+}
+
 
 @media (max-width: 767px) {
     .primary-minimize-brand, .secondary-minimize-brand,

@@ -6,9 +6,8 @@ import Options from '@/components/Filter/Options.vue';
 import CrudService from '@/libraries/services/crud.service';
 import { computed, onMounted, ref, watch } from 'vue';
 import Spinner from './Spinner.vue';
-import { useAppStore } from '@/libraries/app';
+import { formatDate, getNested } from '@/libraries/utility';
 
-const appStore = useAppStore()
 const props = defineProps({
     dataLengtOptions: {
         type: Object,
@@ -40,6 +39,8 @@ const props = defineProps({
     initCallback: null
 })
 
+const idField = ref('_id')
+
 const serialize = function(obj, prefix) {
   var str = [],
     p;
@@ -64,6 +65,7 @@ const dataTableModel = ref({
         column: '_id',
         dir: 'asc'
     },
+    render: 0,
     currentPage: 1,
     dataLength: 25,
     isLoading: false
@@ -84,12 +86,14 @@ function sorting(column){
 }
 
 async function initTableData(dataPage = 1){
+    dataTableModel.value.render++
     dataTableModel.value.pagination.page = dataPage
     dataTableModel.value.currentPage = dataPage
     if(props.endpoint)
     {
         dataTableModel.value.isLoading = true
         const params = {
+            render: dataTableModel.value.render,
             page: dataTableModel.value.currentPage,
             order: dataTableModel.value.sort,
             limit: dataTableModel.value.dataLength
@@ -173,8 +177,26 @@ watch(
 defineExpose({initTableData})
 
 onMounted(() => {
+    if(props.endpoint.includes('/table'))
+    {
+        dataTableModel.value.sort.column = 'id'
+        idField.value = 'id'
+    }
     initTableData()
 })
+
+function parseColumn(column, data){
+    const value = getNested(data, column.key)
+    if(column.type == 'date')
+    {
+        return formatDate(value, column.format ?? 'Y-m-d H:i:s')
+    }
+    if(column.type == 'object')
+    {
+        return JSON.stringify(value)
+    }
+    return value
+}
 </script>
 <template>
     <div class="data-table-header d-flex justify-content-between align-items-center">
@@ -221,20 +243,20 @@ onMounted(() => {
                 </thead>
                 <tbody>
                     <tr v-for="(data, index) in dataTableModel.tableData">
-                        <td class="text-center">{{ (indexStart+index)+1 }}</td>
+                        <td class="number-col text-center">{{ (indexStart+index)+1 }}</td>
                         <td v-for="column in columns">
                             <MultiBadge v-if="column.type == 'multi-badge'" :data="data[column.key]" :map="column.badge" />
                             <StatusBadge v-else-if="column.type == 'status-badge'" :data="data[column.key]" :map="column.badge" />
-                            <span v-else>{{ data[column.key] }}</span>
+                            <span v-else>{{ parseColumn(column, data) }}</span>
                         </td>
-                        <td v-if="Object.values(actions).length">
+                        <td v-if="Object.values(actions).length" class="action-col">
                             <div class="dropdown datatable-dropdown-action">
                                 <button class="btn dropdown-toggle p-0 px-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="ft ft-more-vertical"></i>
                                 </button>
                                 <ul class="dropdown-menu shadow">
-                                    <li v-for="(action, index) in Object.values(actions)">
-                                        <a class="dropdown-item" :class="action.class" :href="action.to ?? '#'" :data-id="data._id" :data-type="action.type" :data-index="index">
+                                    <li v-for="(action) in Object.values(actions)" :key="action.type +'-' + data[idField]">
+                                        <a class="dropdown-item" :class="action.class" :href="action.to ?? '#'" :data-id="data[idField]" :data-type="action.type">
                                             <i v-if="action.icon" class="ft" :class="'ft-'+action.icon"></i>
                                             {{action.label}}
                                         </a>
@@ -245,7 +267,7 @@ onMounted(() => {
                     </tr>
     
                     <tr v-if="dataTableModel.tableData.length == 0">
-                        <td :colspan="columns.length+(Object.entries(actions).length ? 2 : 1)" class="text-center"><i>Tidak ada data</i></td>
+                        <td :colspan="columns.length+(Object.entries(actions).length ? 2 : 1)" class="text-center"><i>No data here</i></td>
                     </tr>
                 </tbody>
             </table>
@@ -269,7 +291,7 @@ onMounted(() => {
                 </li>
                 <li class="page-item" v-for="(item, index) in visiblePages" :key="index">
                     <a class="page-link" :class="dataTableModel.currentPage == item ? 'active' : ''" href="#" v-if="item !== '...'" @click="initTableData(item)">{{item}}</a>
-                    <span v-else>...</span>
+                    <span v-else class="page-link">...</span>
                 </li>
                 <li class="page-item" :class="{ disabled: !dataTableModel.pagination.hasNext }">
                     <a class="page-link" href="#" aria-label="Next" @click="dataTableModel.pagination.hasNext ? initTableData(dataTableModel.pagination.page + 1) : null">

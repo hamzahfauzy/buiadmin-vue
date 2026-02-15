@@ -3,7 +3,7 @@
         <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button"
             aria-haspopup="false" aria-expanded="false">
             <i class="ri-mail-line fs-22"></i>
-            <span class="noti-icon-badge badge text-bg-purple">4</span>
+            <span class="noti-icon-badge badge text-bg-pink">4</span>
         </a>
         <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg py-0 shadow">
             <div class="p-2 border-top-0 border-start-0 border-end-0 border-dashed border">

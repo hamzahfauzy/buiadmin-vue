@@ -4,7 +4,7 @@
 }
 
 .app-content .app-sidebar {
-    flex:0 0 250px;
+    flex:0 0 230px;
     transition: all .25s ease-in-out;
 }
 
@@ -39,7 +39,7 @@
 }
 
 .app-content .app-sidebar.minimize {
-    flex: 0 0 120px;
+    display: none;
 }
 
 .app-content .app-sidebar.minimize ul.app-side-nav {
@@ -197,6 +197,7 @@
 .app-content .app-main-content {
     flex: 1 1 auto;
     padding-top: 1rem;
+    padding-left: 2rem;
     padding-right: 2rem;
     min-width: 0;
 }
