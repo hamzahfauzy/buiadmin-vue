@@ -148,6 +148,7 @@
 
 .detail-data p {
     margin:0;
+    word-wrap: break-word;
 }
 
 .detail-data .detail-label {

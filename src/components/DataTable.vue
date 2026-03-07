@@ -7,6 +7,7 @@ import CrudService from '@/libraries/services/crud.service';
 import { computed, onMounted, ref, watch } from 'vue';
 import Spinner from './Spinner.vue';
 import { formatDate, getNested } from '@/libraries/utility';
+import Swal from 'sweetalert2';
 
 const props = defineProps({
     dataLengtOptions: {
@@ -109,12 +110,21 @@ async function initTableData(dataPage = 1){
         }
 
         const queryString = serialize(params)
-        const request = await CrudService.get(props.endpoint + '?' + queryString)
-        if(request.statusText == 'OK')
-        {
-            dataTableModel.value.tableData = request.data.data
-            dataTableModel.value.pagination = request.data.pagination
-            dataTableModel.value.isLoading = false
+        try {
+            const request = await CrudService.get(props.endpoint + '?' + queryString)
+            if(request.statusText == 'OK')
+            {
+                dataTableModel.value.tableData = request.data.data
+                dataTableModel.value.pagination = request.data.pagination
+                dataTableModel.value.isLoading = false
+            }
+        } catch (error) {
+            Swal.fire({
+                title: 'Load Error',
+                text: error.message,
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            })
         }
     }
     else
