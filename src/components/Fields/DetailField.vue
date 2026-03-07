@@ -13,15 +13,15 @@ function parseColumn(column, data){
     {
         return formatDate(value, column.format ?? 'Y-m-d H:i:s')
     }
-    if(column.type == 'object')
+    if(column.type == 'object' && value != "")
     {
         return JSON.stringify(value)
     }
-    return value
+    return value !== "" ? value : '&nbsp;'
 }
 </script>
 <template>
-    <label for="" style="font-weight: 500;">
+    <label for="" class="detail-label">
         {{field.label}}
     </label>
     <template v-if="field.type == 'image'">
@@ -34,7 +34,7 @@ function parseColumn(column, data){
         </div>
     </template>
     <template v-else>
-        <p class="m-0">
+        <p class="m-0 detail-item">
             <a v-if="field.type == 'link'" :href="data[field.name]" target="_blank">{{ field.linkLabel ?? parseColumn(field, data) }}</a>
             <MultiBadge v-else-if="field.type == 'multi-badge'" :data="data[field.name]" :map="field.badge" />
             <StatusBadge v-else-if="field.type == 'status-badge'" :data="data[field.name]" :map="field.badge" />

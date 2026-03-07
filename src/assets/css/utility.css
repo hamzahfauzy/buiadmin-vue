@@ -150,6 +150,14 @@
     margin:0;
 }
 
+.detail-data .detail-label {
+    font-weight: 500;
+}
+
+.detail-data .detail-item {
+    font-weight: 300;
+}
+
 td:has(.datatable-dropdown-action){
     position: sticky !important;
     right: 0px;

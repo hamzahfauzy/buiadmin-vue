@@ -55,7 +55,7 @@ const handleSubmit = async (e) => {
     <div class="row">
       <template v-for="field in fields">
         <component :key="field.name" :is="inputComponents[field.type]" v-model="modelValue[field.name]"
-          v-if="field?.conditional ? field.conditional() : true" :field="field" class="col-12" :class="field.className ?? ''" />
+          v-if="field?.conditional ? field.conditional() : true" :field="field" class="col-12" :class="field.className ?? ''" :formData="modelValue" />
       </template>
 
       <slot></slot>

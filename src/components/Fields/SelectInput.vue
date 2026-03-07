@@ -17,7 +17,7 @@ const isOptionSelected = ref(false)
         </label>
         <select :id="elId" v-bind="field?.props ?? {}" :value="modelValue" @change="emit('update:modelValue', $event.target.value);" :required="field?.required" class="form-select">
             <option value="">
-                {{ field?.placeholder || "Pilih..." }}
+                {{ field?.placeholder || "Choose..." }}
             </option>
             <option
                 v-for="opt in field?.options || []"

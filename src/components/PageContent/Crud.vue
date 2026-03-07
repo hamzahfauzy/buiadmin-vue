@@ -28,6 +28,12 @@ const dataTable = ref(null)
 
 const createFormData = ref({})
 const openCreateModal = function() {
+    props.page.content.value.create.fields.forEach(f => {
+        if(f.hasOwnProperty('defaultValue'))
+        {
+            createFormData.value[f.name] = f.defaultValue
+        }
+    })
     $('#create-modal').modal('show')
 }
 

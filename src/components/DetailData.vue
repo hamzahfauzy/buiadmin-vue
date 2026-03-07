@@ -6,7 +6,7 @@ defineProps({
 })
 </script>
 <template>
-    <div class="row">
+    <div class="row detail-data">
         <div class="col-12 mb-2" v-for="field in fields" :class="field.className">
             <DetailField :field="field" :data="modelValue" />
         </div>
