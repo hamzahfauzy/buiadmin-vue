@@ -46,10 +46,21 @@ const openCreateModal = function() {
     $('#create-modal').modal('show')
 }
 
+function getEndpoint(additional_string)
+{
+    const endpoint = props.page.content.value.endpoint
+
+    if(!endpoint.includes('?')) return endpoint + additional_string
+
+    const parseEndpoint = endpoint.split('?')
+
+    return endpoint[0] + additional_string + '?' + endpoint[1]
+}
+
 const handleCreate = async function() {
     crudProperties.submitLabel = 'Please wait...'
     try {
-        await CrudService.create(props.page.content.value.endpoint, createFormData.value)
+        await CrudService.create(getEndpoint(), createFormData.value)
         createFormData.value = {}
         dataTable.value.initTableData()
         Swal.fire({
@@ -88,7 +99,7 @@ const afterCreateButton = ref([])
 const viewData = ref({})
 const openViewModal = async function(id) {
     try {
-        const endpoint = props.page.content.value.endpoint + '/' + id
+        const endpoint = getEndpoint('/' + id)
         const {data} = await CrudService.get(endpoint)
         viewData.value = data.data
         $('#view-modal').modal('show')
@@ -101,7 +112,7 @@ const editFormData = ref({})
 const openEditModal = async function(id) {
     try {
         editFormData.value.id = id
-        const endpoint = props.page.content.value.endpoint + '/' + id
+        const endpoint = getEndpoint('/' + id)
         const {data} = await CrudService.get(endpoint)
         const index = props.page.content.value.actions.findIndex(action => action.type == 'edit')
         props.page.content.value.actions[index].fields.forEach(field => {
@@ -118,7 +129,7 @@ const handleEdit = async function() {
     crudProperties.submitLabel = 'Please wait...'
     try {
         const id = editFormData.value.id
-        const endpoint = props.page.content.value.endpoint + '/' + id
+        const endpoint = getEndpoint( '/' + id)
         const payload = {...editFormData.value}
         delete payload.id
         await CrudService.edit(endpoint, payload)
@@ -158,7 +169,8 @@ const handleDelete = async function(id) {
         confirmButtonText: 'OK'
     }).then(async (result) => {
         if (result.isConfirmed) {
-            await CrudService.delete(props.page.content.value.endpoint + '/' + id)
+            const endpoint = getEndpoint( '/' + id)
+            await CrudService.delete(endpoint)
             dataTable.value.initTableData()
             Swal.fire({
                 title: "Deleted!",
