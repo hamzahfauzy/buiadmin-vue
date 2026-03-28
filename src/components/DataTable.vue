@@ -137,7 +137,8 @@ async function initTableData(dataPage = 1){
 
         const queryString = serialize(params)
         try {
-            const request = await CrudService.get(props.endpoint + '?' + queryString)
+            const endpoint = props.endpoint + (props.endpoint.includes('?') ? '&' : '?')
+            const request = await CrudService.get(endpoint + '?' + queryString)
             if(request.statusText == 'OK')
             {
                 dataTableModel.value.tableData = request.data.data
