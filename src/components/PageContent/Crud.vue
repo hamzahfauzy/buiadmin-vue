@@ -46,7 +46,7 @@ const openCreateModal = function() {
     $('#create-modal').modal('show')
 }
 
-function getEndpoint(additional_string)
+function getEndpoint(additional_string = '')
 {
     const endpoint = props.page.content.value.endpoint
 
