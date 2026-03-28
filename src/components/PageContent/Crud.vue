@@ -54,13 +54,14 @@ function getEndpoint(additional_string = '')
 
     const parseEndpoint = endpoint.split('?')
 
-    return parseEndpoint[0] + additional_string + '?' + parseEndpoint[1]
+    return parseEndpoint[0] + additional_string + (parseEndpoint[1] ? '?' + parseEndpoint[1] : '')
 }
 
 const handleCreate = async function() {
     crudProperties.submitLabel = 'Please wait...'
     try {
-        await CrudService.create(getEndpoint(), createFormData.value)
+        const endpoint = props.page.content.value.create?.endpoint ?? getEndpoint()
+        await CrudService.create(endpoint, createFormData.value)
         createFormData.value = {}
         dataTable.value.initTableData()
         Swal.fire({
@@ -112,9 +113,10 @@ const editFormData = ref({})
 const openEditModal = async function(id) {
     try {
         editFormData.value.id = id
-        const endpoint = getEndpoint('/' + id)
-        const {data} = await CrudService.get(endpoint)
         const index = props.page.content.value.actions.findIndex(action => action.type == 'edit')
+        const editAction = props.page.content.value.actions[index]
+        const endpoint = editAction?.endpoint ?? getEndpoint('/' + id)
+        const {data} = await CrudService.get(endpoint)
         props.page.content.value.actions[index].fields.forEach(field => {
             if (field.type == 'file') return
             editFormData.value[field.name] = getNested(data.data, field.fieldValue ?? field.name)

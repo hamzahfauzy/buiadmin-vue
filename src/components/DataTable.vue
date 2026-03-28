@@ -138,7 +138,7 @@ async function initTableData(dataPage = 1){
         const queryString = serialize(params)
         try {
             const endpoint = props.endpoint + (props.endpoint.includes('?') ? '&' : '?')
-            const request = await CrudService.get(endpoint + '?' + queryString)
+            const request = await CrudService.get(endpoint + queryString)
             if(request.statusText == 'OK')
             {
                 dataTableModel.value.tableData = request.data.data
@@ -355,10 +355,14 @@ const evaluateCondition = (condition, formData) => {
                                 <ul class="dropdown-menu shadow">
                                     <li v-for="(action) in Object.values(actions)" :key="action.type +'-' + data[idField]">
                                         <template v-if="!action.show_if || evaluateCondition(action.show_if, data)">
-                                            <router-link v-if="action.to" class="dropdown-item" :class="action.class" :data-id="data[idField]" :data-type="action.type" :to="parseTo(action.to, data)">
+                                            <router-link v-if="action.to && action.to.path" class="dropdown-item" :class="action.class" :data-id="data[idField]" :data-type="action.type" :to="parseTo(action.to, data)">
                                                 <i v-if="action.icon" class="ft" :class="'ft-'+action.icon"></i>
                                                 {{action.label}}
                                             </router-link>
+                                            <a v-else-if="action.to && action.to.value" class="dropdown-item" :class="action.class" :href="data[action.to.value]" :data-id="data[idField]" :data-type="action.type" target="_blank">
+                                                <i v-if="action.icon" class="ft" :class="'ft-'+action.icon"></i>
+                                                {{action.label}}
+                                            </a>
                                             <a v-else class="dropdown-item" :class="action.class" href="#" :data-id="data[idField]" :data-type="action.type">
                                                 <i v-if="action.icon" class="ft" :class="'ft-'+action.icon"></i>
                                                 {{action.label}}

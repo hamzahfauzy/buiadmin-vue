@@ -2,7 +2,7 @@
 import StatusBadge from '../StatusBadge.vue';
 import MultiBadge from '../MultiBadge.vue';
 import { getNested, formatDate } from '@/libraries/utility';
-defineProps({
+const props = defineProps({
     field: {},
     data: { type: Object, default: {} },
 })
@@ -19,7 +19,7 @@ function parseColumn(column, data){
     }
     if(column.type == 'currency')
     {
-        return formatCurrency(value)
+        return value ? formatCurrency(value) : 0
     }
     if(column.type == 'object' && value != "")
     {
@@ -33,7 +33,6 @@ function parseColumn(column, data){
 }
 
 function parseTemplate(template, row) {
-    console.log(template, row)
   if (!template) return ''
 
   return template.replace(/{{(.*?)}}/g, (_, expression) => {
@@ -75,72 +74,99 @@ function calculateFooterValue(footerItem, items) {
 
   return 0
 }
+
+function evaluateCondition(condition, formData) {
+  if (!condition) return true;
+
+  if (condition.type === 'or') {
+    return condition.conditions.some(c => evaluateCondition(c, formData));
+  }
+
+  if (condition.type === 'and') {
+    return condition.conditions.every(c => evaluateCondition(c, formData));
+  }
+
+  const { field, operator, value } = condition;
+  const current = formData[field];
+
+  switch (operator) {
+    case 'equals':
+      return current === value;
+    case 'not_equals':
+      return current !== value;
+    default:
+      return true;
+  }
+};
+
 </script>
 <template>
-    <label for="" class="detail-label" v-if="field.label">
-        {{field.label}}
-    </label>
-    <template v-if="field.type == 'image'">
-        <div :class="field.isCenter ? 'd-flex' : ''">
-            <div class="border rounded-circle" style="width: 150px;height: 150px;">
-                <a :href="data[field.name]" target="_blank">
-                    <img :src="parseColumn(field, data)" :alt="field.name" style="width: 100%;height: 100%;object-fit: cover;">
-                </a>
+    <template v-if="!field.show_if || evaluateCondition(field.show_if, data)">
+        <label for="" class="detail-label" v-if="field.label">
+            {{field.label}}
+        </label>
+        <template v-if="field.type == 'image'">
+            <div :class="field.isCenter ? 'd-flex' : ''">
+                <div class="border rounded-circle" style="width: 150px;height: 150px;">
+                    <a :href="data[field.name]" target="_blank">
+                        <img :src="parseColumn(field, data)" :alt="field.name" style="width: 100%;height: 100%;object-fit: cover;">
+                    </a>
+                </div>
             </div>
-        </div>
-    </template>
-    <template v-else-if="field.type == 'tableItems'">
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th v-for="column in field?.columns"
-                        :key="column.name"
-                        class="text-nowrap bg-secondary text-white fw-normal"
-                        :class="column.className ?? ''"
-                        style="min-width: 100px;">
-                    {{ column.columnLabel }}
-                    </th>
-                </tr>
-                </thead>
-
-                <tbody>
-                    <tr v-for="(row, rowIndex) in data[field?.name]" :key="rowIndex">
-                        <td v-for="column in field?.columns" :key="column.name" class="text-nowrap" :class="column.className ?? ''" v-html="parseColumn(column, row)"></td>
-                    </tr>
-                </tbody>
-
-                <tfoot v-if="field?.footer?.length">
+        </template>
+        <template v-else-if="field.type == 'tableItems'">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
                     <tr>
-                        <td v-for="(footerItem, index) in field.footer" :key="index" :class="footerItem.className ?? ''">
-
-                        <!-- RAW TEXT -->
-                        <span v-if="footerItem.type === 'raw'">
-                            {{ footerItem.value }}
-                        </span>
-
-                        <!-- CURRENCY -->
-                        <span v-else-if="footerItem.type === 'currency'">
-                            {{ formatCurrency(calculateFooterValue(footerItem, data[field?.name])) }}
-                        </span>
-
-                        <!-- DEFAULT -->
-                        <span v-else>
-                            {{ calculateFooterValue(footerItem, data[field?.name]) }}
-                        </span>
-
-                        </td>
+                        <th v-for="column in field?.columns"
+                            :key="column.name"
+                            class="text-nowrap bg-secondary text-white fw-normal"
+                            :class="column.className ?? ''"
+                            style="min-width: 100px;">
+                        {{ column.columnLabel }}
+                        </th>
                     </tr>
-                </tfoot>
-            </table>
-            </div>
-    </template>
-    <template v-else>
-        <p class="m-0 detail-item">
-            <a v-if="field.type == 'link'" :href="data[field.name]" target="_blank">{{ field.linkLabel ?? parseColumn(field, data) }}</a>
-            <MultiBadge v-else-if="field.type == 'multi-badge'" :data="data[field.name]" :map="field.badge" />
-            <StatusBadge v-else-if="field.type == 'status-badge'" :data="data[field.name]" :map="field.badge" />
-            <span v-else v-html="field.map ? field.map[data[field.name]] : parseColumn(field, data)"></span>
-        </p>
+                    </thead>
+    
+                    <tbody>
+                        <tr v-for="(row, rowIndex) in data[field?.name]" :key="rowIndex">
+                            <td v-for="column in field?.columns" :key="column.name" class="text-nowrap" :class="column.className ?? ''" v-html="parseColumn(column, row)"></td>
+                        </tr>
+                    </tbody>
+    
+                    <tfoot v-if="field?.footer?.length">
+                        <tr>
+                            <td v-for="(footerItem, index) in field.footer" :key="index" :class="footerItem.className ?? ''">
+    
+                            <!-- RAW TEXT -->
+                            <span v-if="footerItem.type === 'raw'">
+                                {{ footerItem.value }}
+                            </span>
+    
+                            <!-- CURRENCY -->
+                            <span v-else-if="footerItem.type === 'currency'">
+                                {{ formatCurrency(calculateFooterValue(footerItem, data[field?.name])) }}
+                            </span>
+    
+                            <!-- DEFAULT -->
+                            <span v-else>
+                                {{ calculateFooterValue(footerItem, data[field?.name]) }}
+                            </span>
+    
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                </div>
+        </template>
+        <template v-else>
+            <p class="m-0 detail-item">
+                <a v-if="field.type == 'link'" :href="data[field.name]" target="_blank">{{ field.linkLabel ?? parseColumn(field, data) }}</a>
+                <MultiBadge v-else-if="field.type == 'multi-badge'" :data="data[field.name]" :map="field.badge" />
+                <StatusBadge v-else-if="field.type == 'status-badge'" :data="data[field.name]" :map="field.badge" />
+                <span v-else v-html="field.map ? field.map[data[field.name]] : parseColumn(field, data)"></span>
+            </p>
+        </template>
     </template>
 </template>

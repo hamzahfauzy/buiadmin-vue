@@ -94,7 +94,7 @@ function updateCell(rowIndex, field, value) {
       <table class="table table-bordered">
         <thead>
           <tr>
-            <th>
+            <th style="width:1%;">
               <button type="button" class="btn btn-primary btn-sm" @click="addItems">
                 <i class="ft ft-plus"></i>
               </button>
@@ -102,8 +102,8 @@ function updateCell(rowIndex, field, value) {
 
             <th v-for="column in field?.columns"
                 :key="column.name"
-                class="text-nowrap"
-                style="min-width: 100px;">
+                style="min-width: 100px;"
+                class="text-nowrap">
               {{ column.columnLabel }}
             </th>
           </tr>
@@ -121,6 +121,7 @@ function updateCell(rowIndex, field, value) {
 
             <td v-for="field in props.field?.columns"
                 :key="field.name"
+                :style="field.style"
                 class="text-nowrap">
 
               <component
