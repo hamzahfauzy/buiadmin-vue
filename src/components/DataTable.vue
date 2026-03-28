@@ -8,6 +8,9 @@ import { computed, onMounted, ref, watch } from 'vue';
 import Spinner from './Spinner.vue';
 import { formatDate, getNested } from '@/libraries/utility';
 import Swal from 'sweetalert2';
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 
 const props = defineProps({
     dataLengtOptions: {
@@ -86,6 +89,21 @@ function sorting(column){
     initTableData()
 }
 
+function extractFiltersFromQuery(query) {
+    const filters = {}
+
+    for (const key in query) {
+        const match = key.match(/^filters\[(.+)\]$/)
+
+        if (match) {
+            const field = match[1]
+            filters[field] = query[key]
+        }
+    }
+
+    return filters
+}
+
 async function initTableData(dataPage = 1){
     dataTableModel.value.render++
     dataTableModel.value.pagination.page = dataPage
@@ -103,11 +121,19 @@ async function initTableData(dataPage = 1){
         {
             params.search = dataTableModel.value.search
         }
-        
-        if(dataTableModel.value.filters)
-        {
-            params.filters = dataTableModel.value.filters
+
+        const urlFilters = extractFiltersFromQuery(route.query)
+
+        const mergedFilters = {
+            ...urlFilters,
+            ...dataTableModel.value.filters
         }
+        
+        params.filters = mergedFilters
+        
+        // if(dataTableModel.value.filters)
+        // {
+        // }
 
         const queryString = serialize(params)
         try {
@@ -169,7 +195,10 @@ const showingText = computed(() => {
     const from = (page - 1) * limit + 1
     const to   = Math.min(page * limit, total)
 
-    return `Showing ${from} to ${to} of ${total} entries`
+    if(from && to && total)
+        return `Showing ${from} to ${to} of ${total} entries`
+
+    return 'Showing 0 to 0 of 0 entries'
 })
 
 let searchTimeout = null
@@ -201,15 +230,73 @@ function parseColumn(column, data){
     {
         return formatDate(value, column.format ?? 'Y-m-d H:i:s')
     }
+    if(column.type == 'currency')
+    {
+        return parseInt(value).toLocaleString('id-ID')
+    }
     if(column.type == 'object')
     {
         return JSON.stringify(value)
     }
     return value
 }
+
+function buildQuery(template, data, parentKey = null, result = {}) {
+    for (const key in template) {
+        const value = template[key]
+
+        const newKey = parentKey 
+            ? `${parentKey}[${key}]` 
+            : key
+
+        if (typeof value === 'object' && value !== null) {
+            buildQuery(value, data, newKey, result)
+        } else {
+            result[newKey] = data[value]
+        }
+    }
+
+    return result
+}
+
+function parseTo(to, data) {
+    const routeTo = {
+        path: to?.path
+    }
+
+    if (to?.query) {
+        routeTo.query = buildQuery(to.query, data)
+    }
+
+    return routeTo
+}
+
+const evaluateCondition = (condition, formData) => {
+  if (!condition) return true;
+
+  if (condition.type === 'or') {
+    return condition.conditions.some(c => evaluateCondition(c, formData));
+  }
+
+  if (condition.type === 'and') {
+    return condition.conditions.every(c => evaluateCondition(c, formData));
+  }
+
+  const { field, operator, value } = condition;
+  const current = formData[field];
+
+  switch (operator) {
+    case 'equals':
+      return current === value;
+    case 'not_equals':
+      return current !== value;
+    default:
+      return true;
+  }
+};
 </script>
 <template>
-    <div class="data-table-header d-flex justify-content-between align-items-center">
+    <div class="data-table-header d-flex justify-content-between align-items-center mb-2">
         <div class="d-flex justify-content-between gap-2 align-items-center">
             <Options :field="dataLengtOptions" v-model="dataTableModel.dataLength" style="width: 74px;" @change="initTableData()" />
             <label for="">Data per page</label>
@@ -266,10 +353,16 @@ function parseColumn(column, data){
                                 </button>
                                 <ul class="dropdown-menu shadow">
                                     <li v-for="(action) in Object.values(actions)" :key="action.type +'-' + data[idField]">
-                                        <a class="dropdown-item" :class="action.class" :href="action.to ?? '#'" :data-id="data[idField]" :data-type="action.type">
-                                            <i v-if="action.icon" class="ft" :class="'ft-'+action.icon"></i>
-                                            {{action.label}}
-                                        </a>
+                                        <template v-if="!action.show_if || evaluateCondition(action.show_if, data)">
+                                            <router-link v-if="action.to" class="dropdown-item" :class="action.class" :data-id="data[idField]" :data-type="action.type" :to="parseTo(action.to, data)">
+                                                <i v-if="action.icon" class="ft" :class="'ft-'+action.icon"></i>
+                                                {{action.label}}
+                                            </router-link>
+                                            <a v-else class="dropdown-item" :class="action.class" href="#" :data-id="data[idField]" :data-type="action.type">
+                                                <i v-if="action.icon" class="ft" :class="'ft-'+action.icon"></i>
+                                                {{action.label}}
+                                            </a>
+                                        </template>
                                     </li>
                                 </ul>
                             </div>

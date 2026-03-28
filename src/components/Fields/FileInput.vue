@@ -13,7 +13,7 @@ function onFileChange(e) {
 }
 </script>
 <template>
-    <div class="mb-3">
+    <div class="mb-2">
         <label v-if="field?.label" class="form-label" :for="elId">
         {{ field.label }}
         </label>

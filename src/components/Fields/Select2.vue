@@ -57,18 +57,19 @@ onMounted(() => {
 
       if(props.field.ajax.urlParams){
         props.field.ajax.urlParams.forEach(param => {
-          query[param.key] = props.formData[param.value]
+          query[param.key] = param.type == 'raw' ? param.value : props.formData[param.value] 
         })
       }
 
       return query;
     }
     ajax.processResults = function(data, page){
+      // return { results: data.data }
       return {
           results: [
               { id: "", text: "" },
               ...data.data.map(d => {
-                  return { id: d[props.field.ajax.response.id], text: d[props.field.ajax.response.text] }
+                  return { id: d[props.field.ajax.response.id], text: d[props.field.ajax.response.text], data: d }
               })
           ]
       };
@@ -83,23 +84,40 @@ onMounted(() => {
     }
   }
 
-  $el.select2({
+  const select2Param = {
     placeholder: props.field.placeholder ?? 'Choose...',
     width: "100%",
     theme: 'bootstrap-5',
     ajax: ajax ?? null,
     dropdownParent: props.field.dropdownParent ? $(props.field.dropdownParent) : null,
     allowClear: true
-  });
+  }
+
+  $el.select2(select2Param);
 
   $el.val(props.modelValue).trigger("change");
 
   $el.on("change", () => {
     emit("update:modelValue", $el.val());
 
+    // if (props.field.events?.change) {
+      // props.field.events.change($el.val())
+    // }
+  });
+
+  $el.on('select2:select', function (e) {
+    const item = e.params.data;
+
     if (props.field.events?.change) {
-      props.field.events.change($el.val())
+      const change = props.field.events?.change
+      const fieldToSet = change.set;     // "amount"
+      const valueField = change.value;   // "remaining_amount"
+      props.formData[fieldToSet] = item.data[valueField]; 
     }
+
+    // console.log(item.id);
+    // console.log(item.text);
+    // console.log(item.data); // object asli dari backend
   });
 });
 
@@ -108,7 +126,7 @@ onBeforeUnmount(() => {
 });
 </script>
 <template>
-  <div class="mb-3">
+  <div class="mb-2">
         <label v-if="field?.label" :for="elId" class="form-label">
             {{ field.label }}
         </label>

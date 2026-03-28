@@ -19,7 +19,7 @@ function toggle(e) {
 </script>
 
 <template>
-    <div class="mb-3">
+    <div class="mb-2">
         <div class="form-check">
             <input type="checkbox" :id="elId" v-bind="field?.props ?? {}" :checked="modelValue === (field.value ?? true)" class="form-check-input" @change="toggle">
             <label :for="elId" class="form-check-label">{{ field.label }}</label>

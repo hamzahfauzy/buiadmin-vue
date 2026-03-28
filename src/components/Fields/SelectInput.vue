@@ -11,7 +11,7 @@ const elId = props.field.name +'-'+ useId()
 const isOptionSelected = ref(false)
 </script>
 <template>
-    <div class="mb-3">
+    <div class="mb-2">
         <label v-if="field?.label" :for="elId" class="form-label">
             {{ field.label }}
         </label>

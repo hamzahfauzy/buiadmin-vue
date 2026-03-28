@@ -153,6 +153,7 @@
 
 .detail-data .detail-label {
     font-weight: 500;
+    font-size: 14px;
 }
 
 .detail-data .detail-item {
@@ -170,6 +171,31 @@ td:has(.datatable-dropdown-action){
     min-width: 150px;
 }
 
+/* Cards and Stats */
+.stat-card, .table-card {
+    background: #ffffff;
+    padding: 1.5rem;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    height: 100%;
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f7fe;
+    color: var(--primary-color);
+    border-radius: 12px !important;
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    font-size: 14px;
+    margin-bottom: .1rem;
+}
 
 @media (max-width: 767px) {
     .primary-minimize-brand, .secondary-minimize-brand,

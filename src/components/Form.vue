@@ -15,6 +15,30 @@ const state = reactive({
   isDisable: false
 })
 
+const evaluateCondition = (condition, formData) => {
+  if (!condition) return true;
+
+  if (condition.type === 'or') {
+    return condition.conditions.some(c => evaluateCondition(c, formData));
+  }
+
+  if (condition.type === 'and') {
+    return condition.conditions.every(c => evaluateCondition(c, formData));
+  }
+
+  const { field, operator, value } = condition;
+  const current = formData[field];
+
+  switch (operator) {
+    case 'equals':
+      return current === value;
+    case 'not_equals':
+      return current !== value;
+    default:
+      return true;
+  }
+};
+
 const emit = defineEmits(['submit'])
 
 const handleSubmit = async (e) => {
@@ -55,7 +79,8 @@ const handleSubmit = async (e) => {
     <div class="row">
       <template v-for="field in fields">
         <component :key="field.name" :is="inputComponents[field.type]" v-model="modelValue[field.name]"
-          v-if="field?.conditional ? field.conditional() : true" :field="field" class="col-12" :class="field.className ?? ''" :formData="modelValue" />
+          v-if="!field.show_if || evaluateCondition(field.show_if, modelValue)"
+          :field="field" class="col-12" :class="field.className ?? ''" :formData="modelValue" />
       </template>
 
       <slot></slot>

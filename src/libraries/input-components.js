@@ -14,5 +14,6 @@ export default {
     timePicker: defineAsyncComponent(() => import("@/components/Fields/TimePickerInput.vue")),
     toggle: defineAsyncComponent(() => import("@/components/Fields/ToggleInput.vue")),
     radio: defineAsyncComponent(() => import("@/components/Fields/RadioInput.vue")),
-    number: defineAsyncComponent(() => import("@/components/Fields/NumberInput.vue"))
+    number: defineAsyncComponent(() => import("@/components/Fields/NumberInput.vue")),
+    tableItems: defineAsyncComponent(() => import("@/components/Fields/TableItems.vue"))
 }

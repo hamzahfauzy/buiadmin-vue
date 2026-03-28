@@ -2,6 +2,7 @@
 import { useAppStore } from '@/libraries/app';
 import { computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import SidebarNavLink from './SidebarNavLink.vue';
 const props = defineProps({
     className: {
         type: String,
@@ -72,39 +73,24 @@ onMounted( () => {
 </script>
 <template>
     <ul :class="className" data-simplebar>
-        <li class="side-nav-title">Menu</li>
-        <li v-for="(menu, index) in menus" :class="{'side-nav-title':menu.isTitle, 'side-nav-item':!menu.isTitle, 'item-active':isActive(menu)}">
-            <template v-if="menu.isTitle">{{ menu.label }}</template>
-            <template v-else>
-                <router-link v-if="!menu.hasOwnProperty('children')" :to="'/page' + menu.route" class="nav-link has-arrow">
-                    <i class="ft ft-fw" :class="'ft-'+menu.icon"></i> 
-                    <span class="nav-label">
-                        {{menu.label}}
-                    </span>
-                </router-link>
-    
-                <template v-else>
-                    <a :href="'#sidebar-'+index" data-bs-toggle="collapse" aria-expanded="false" :aria-controls="'sidebar-'+index" class="collapsed">
-                        <i class="ft ft-fw" :class="'ft-'+menu.icon"></i> 
-                        <span class="nav-label">
-                            {{menu.label}}
-                        </span>
-    
-                        <span class="menu-arrow"></span>
-                    </a>
-    
-                    <div class="collapse sidebar-collapse" :id="'sidebar-'+index" :class="{'show': isActive(menu)}">
-                        <ul class="side-nav-dropdown-item">
-                            <li v-for="children in menu.children" :class="{'item-active':isActive(children)}">
-                                <router-link v-if="children.route" :to="'/page' + children.route">
-                                    {{ children.label }}
-                                </router-link>
-                                <a href="#" v-else>{{ children.label }}</a>
-                            </li>
-                        </ul>
-                    </div>
+        <li class="side-nav-title">Navigation</li>
+        <template v-for="(menu, index) in menus">
+            <template v-if="menu.isSection">
+                <li :class="{'side-nav-title':menu.isSection, 'item-active':isActive(menu)}">
+                    {{ menu.label }}
+                </li>
+
+                <template v-if="menu.children">
+                <li v-for="(sectionMenu, idx) in menu.children" :class="{'side-nav-item':true, 'item-active':isActive(sectionMenu)}">
+                    <SidebarNavLink :menu="sectionMenu" :index="index" />
+                </li>
                 </template>
             </template>
-        </li>
+            <template v-else>
+                <li :class="{'side-nav-item':!menu.isSection, 'item-active':isActive(menu)}">
+                    <SidebarNavLink :menu="menu" :index="index" />
+                </li>
+            </template>
+        </template>
     </ul>
 </template>

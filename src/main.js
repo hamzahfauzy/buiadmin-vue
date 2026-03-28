@@ -54,6 +54,17 @@ router.beforeEach(async (to, from, next) => {
     }
 })
 
+router.afterEach(() => {
+    document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+        menu.classList.remove('show')
+    })
+
+    document.querySelectorAll('.dropdown-toggle.show').forEach(toggle => {
+        toggle.classList.remove('show')
+        toggle.setAttribute('aria-expanded', 'false')
+    })
+})
+
 // router.afterEach((to) => {
 //   // alertStore.clearAlerts();
 

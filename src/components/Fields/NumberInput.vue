@@ -8,7 +8,7 @@ const emit = defineEmits(["update:modelValue"])
 const elId = props.field.name +'-'+useId()
 </script>
 <template>
-    <div :class="field?.label ? 'mb-3' : ''">
+    <div :class="field?.label ? 'mb-2' : ''">
         <label v-if="field?.label" :for="elId" class="form-label">
             {{ field.label }}
         </label>

@@ -9,7 +9,9 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { getNested } from '@/libraries/utility';
 import { useAppStore } from '@/libraries/app';
 import DetailData from '../DetailData.vue';
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const appStore = useAppStore()
 const props = defineProps({
     page: {
@@ -31,7 +33,14 @@ const openCreateModal = function() {
     props.page.content.value.create.fields.forEach(f => {
         if(f.hasOwnProperty('defaultValue'))
         {
-            createFormData.value[f.name] = f.defaultValue
+            if(f.defaultFrom && f.defaultFrom == 'queryParam')
+            {
+                createFormData.value[f.name] = route.query['filters['+f.defaultValue+']']
+            }
+            else
+            {
+                createFormData.value[f.name] = f.defaultValue
+            }
         }
     })
     $('#create-modal').modal('show')
@@ -51,14 +60,13 @@ const handleCreate = async function() {
         })
         $('#create-modal').modal('hide')
     } catch (error) {
-        console.log(error)
         if(error?.response?.data?.message)
         {
             const msg = error?.response?.data?.message
             const errors = error?.response?.data?.errors
             Swal.fire({
                 title: msg,
-                text: Object.values(errors).join(' '),
+                html: Object.values(errors).join('<br>'),
                 icon: 'warning',
                 confirmButtonText: 'OK'
             })
@@ -74,6 +82,8 @@ const createButton = props.page.content.value.create && appStore.hasPermission(p
     to: props.page.content.value.create.to ?? '',
     clickEvent: openCreateModal
 } : {};
+
+const afterCreateButton = ref([])
 
 const viewData = ref({})
 const openViewModal = async function(id) {
@@ -131,7 +141,7 @@ const handleEdit = async function() {
         
         Swal.fire({
             title: msg,
-            text: errors,
+            html: errors,
             icon: 'warning',
             confirmButtonText: 'OK'
         })
@@ -195,11 +205,21 @@ onUnmounted(() => {
 
 onMounted(() => {
     actions.value = props.page.content.value.actions.filter(action => appStore.hasPermission(action.permission))
+
+    props.page.content.value.afterCreate?.forEach(btn => {
+        afterCreateButton.value.push({
+            type: btn.type, 
+            label: btn.label,
+            icon: btn.icon,
+            className: btn.className,
+            to: btn.to ?? '',
+        })
+    })
 })
 </script>
 <template>
     <div class="crud-container">
-        <PageTitle :title="page.title" :actions="[createButton]" />
+        <PageTitle :title="page.title" :actions="[createButton, ...afterCreateButton]" />
 
         <DataTable 
             :columns="page.content.value.columns" 
