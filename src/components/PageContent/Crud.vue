@@ -54,7 +54,7 @@ function getEndpoint(additional_string)
 
     const parseEndpoint = endpoint.split('?')
 
-    return endpoint[0] + additional_string + '?' + endpoint[1]
+    return parseEndpoint[0] + additional_string + '?' + parseEndpoint[1]
 }
 
 const handleCreate = async function() {
