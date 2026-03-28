@@ -15,5 +15,6 @@ export default {
     toggle: defineAsyncComponent(() => import("@/components/Fields/ToggleInput.vue")),
     radio: defineAsyncComponent(() => import("@/components/Fields/RadioInput.vue")),
     number: defineAsyncComponent(() => import("@/components/Fields/NumberInput.vue")),
-    tableItems: defineAsyncComponent(() => import("@/components/Fields/TableItems.vue"))
+    tableItems: defineAsyncComponent(() => import("@/components/Fields/TableItems.vue")),
+    document: defineAsyncComponent(() => import("@/components/Fields/DocumentInput.vue"))
 }
