@@ -120,9 +120,14 @@ const openEditModal = async function(id) {
         props.page.content.value.actions[index].fields.forEach(field => {
             if (field.type == 'file') return
             editFormData.value[field.name] = getNested(data.data, field.fieldValue ?? field.name)
+            if(field.name == 'customer_id')
+            {
+                console.log(data.data, field.fieldValue)
+            }
         })
+
         $('#edit-modal').modal('show')
-    } catch (error) {
+    } catch (error) { 
         
     }
 }

@@ -2,6 +2,7 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useId } from 'vue';
 import CrudService from '@/libraries/services/crud.service';
+import { getNested } from '@/libraries/utility';
 
 const props = defineProps({
   modelValue: [String, Number],
@@ -30,7 +31,7 @@ watch(
       const listUrl = props.field.ajax.initList.url + '/' + props.formData[props.field.ajax.initList.key]
       const {data} = await CrudService.get(listUrl)
 
-      $el.append(`<option value="${data.data[props.field.ajax.initList.response.id]}">${data.data[props.field.ajax.initList.response.text]}</option>`)
+      $el.append(`<option value="${data.data[props.field.ajax.initList.response.id]}">${getNested(data.data, props.field.ajax.initList.response.text)}</option>`)
     }
 
     $el.val(val).trigger('change.select2')
@@ -69,7 +70,7 @@ onMounted(() => {
           results: [
               { id: "", text: "" },
               ...data.data.map(d => {
-                  return { id: d[props.field.ajax.response.id], text: d[props.field.ajax.response.text], data: d }
+                  return { id: d[props.field.ajax.response.id], text: getNested(d, props.field.ajax.response.text), data: d }
               })
           ]
       };
